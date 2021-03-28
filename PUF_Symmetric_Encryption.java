@@ -1,3 +1,16 @@
+/*
+ Author: Aditya Sood
+ Date: 1/05/2021
+
+ Class Functionality:
+ This class is where the key derivation and encryption transpire
+ An encrypt function is defined, which takes the PUF, salt, and App ID as parameters to generate a symmetric key
+ An initialization vector (IV) is generated
+ AES encryption is performed on these EHRs with PKCS5 padding
+ A similar decrypt function is also defined
+*/
+
+
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.SecureRandom;
@@ -27,24 +40,8 @@ public class PUF_Symmetric_Encryption{
 		byte[] cipherText = null;
 		
 		try {
-			
-		
-
 		    PBEKeySpec spec = new PBEKeySpec(myPufHash.toCharArray(), salt, 1000, 256 * 8);
 		    key = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(spec);
-		    //Cipher aes = Cipher.getInstance("AES");
-		    //aes.init(Cipher.ENCRYPT_MODE, key);
-			
-			
-		   // AlgorithmParameterSpec hkdfSpec = new HkdfParameterSpec(myPufHash, salt, Application_id);
-		    //KeyDerivation kdf = KeyDerivation.getInstance("HkdfSHA256", hkdfSpec);
-		    
-		    // Next specify type and length of the desired key and place into parameter spec
-		    //DerivedKeyParameterSpec keySpec = new DerivedKeyParameterSpec("AES", 32);
-
-		    // Derive the key
-		    //SecretKey derivedAesKey = kdf.deriveKey(keySpec);
-		
 			
 			} catch (GeneralSecurityException ge) {
 				System.out.println("Ouch! Caught " + ge);
@@ -53,12 +50,12 @@ public class PUF_Symmetric_Encryption{
 		byte[] IV = new byte[16];
 		try {
 		// Generating IV.
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(IV);
+                         SecureRandom random = new SecureRandom();
+                         random.nextBytes(IV);
         
-        System.out.println("Original Text  : "+ EHR_Data);
+       			 System.out.println("Original Text  : "+ EHR_Data);
         
-        cipherText = encrypt(EHR_Data.getBytes(),key, IV);
+       			 cipherText = encrypt(EHR_Data.getBytes(),key, IV);
         
 		}
 		catch (Exception e) {
@@ -82,19 +79,20 @@ public class PUF_Symmetric_Encryption{
 		
 		try {
 			PBEKeySpec spec = new PBEKeySpec(myPufHash.toCharArray(), salt, 1000, 256 * 8);
-		    key = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(spec);
+		    	key = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(spec);
 		    
-			} catch (GeneralSecurityException ge) {
-				System.out.println("Ouch! Caught " + ge);
+		}
+		catch (GeneralSecurityException ge) {
+			System.out.println("Ouch! Caught " + ge);
 				
 		}
-		String decryptedText = null;
+			String decryptedText = null;
 		try {
 		byte[] IV = Arrays.copyOfRange(IvAndCipherText.getBytes(), 0, 15);
-		
-		byte[] cipherText = Arrays.copyOfRange(IvAndCipherText.getBytes(), 16, IvAndCipherText.getBytes().length);
-	    decryptedText = decrypt(cipherText, key, IV);
-        System.out.println("DeCrypted Text : "+decryptedText);
+			
+			byte[] cipherText = Arrays.copyOfRange(IvAndCipherText.getBytes(), 16, IvAndCipherText.getBytes().length);
+		   	decryptedText = decrypt(cipherText, key, IV);
+        		System.out.println("DeCrypted Text : "+decryptedText);
         
 		}
 		catch (Exception e) {
@@ -146,59 +144,63 @@ public class PUF_Symmetric_Encryption{
 	
 	
 	
-	
-//	
-//	public String encrypt_aes256_gcm(String EHR_Data, SecretKey PUF_Secret) {
-//		static String plainText = "Patient #1: Blood Pressure:120/90; Heart Rate: 78";
-//	    public static final int AES_KEY_SIZE = 256;
-//	    public static final int GCM_IV_LENGTH = 12;
-//	    public static final int GCM_TAG_LENGTH = 16;
-//	    
-//	    KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-//        keyGenerator.init(AES_KEY_SIZE);
-//       
-//        // Generate Key
-//        SecretKey key = keyGenerator.generateKey();
-//        byte[] IV = new byte[GCM_IV_LENGTH];
-//        SecureRandom random = new SecureRandom();
-//        random.nextBytes(IV);
-//
-//        System.out.println("Original Text : " + plainText);
-//        
-//	}
+//Begin future extensions	
+/*	
+	public String encrypt_aes256_gcm(String EHR_Data, SecretKey PUF_Secret) {
+		static String plainText = "Patient #1: Blood Pressure:120/90; Heart Rate: 78";
+	    public static final int AES_KEY_SIZE = 256;
+	    public static final int GCM_IV_LENGTH = 12;
+	    public static final int GCM_TAG_LENGTH = 16;
+	    
+	    KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+        keyGenerator.init(AES_KEY_SIZE);
+       
+        // Generate Key
+        SecretKey key = keyGenerator.generateKey();
+        byte[] IV = new byte[GCM_IV_LENGTH];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(IV);
 
-//	public String encrypt_decrypt_aes128_gcm(String EHR_Data, String PUF_Secret) {
-//		// Obtain a AES/GCM cipher to do the enciphering. Must obtain
-//        // and use the Parameters for successful decryption.
-//        
-//		// Create a 128-bit AES key.
-//        KeyGenerator kg = KeyGenerator.getInstance("AES");
-//        kg.init(128);
-//        SecretKey key = kg.generateKey();
-//		
-//		Cipher encCipher = Cipher.getInstance("AES/GCM/NOPADDING");
-//        encCipher.init(Cipher.ENCRYPT_MODE, key);
-//        byte[] enc = encCipher.doFinal(data);
-//        AlgorithmParameters ap = encCipher.getParameters();
-//
-//        // Obtain a similar cipher, and use the parameters.
-//        Cipher decCipher = Cipher.getInstance("AES/GCM/NOPADDING");
-//        decCipher.init(Cipher.DECRYPT_MODE, key, ap);
-//        byte[] dec = decCipher.doFinal(enc);
-//
-//        if (Arrays.compare(data, dec) != 0) {
-//            throw new Exception("Original data != decrypted data");
-//		
-//		return "";
-//		
-//	}	
+        System.out.println("Original Text : " + plainText);
+        
+	}
+
+	public String encrypt_decrypt_aes128_gcm(String EHR_Data, String PUF_Secret) {
+		// Obtain a AES/GCM cipher to do the enciphering. Must obtain
+        // and use the Parameters for successful decryption.
+        
+		// Create a 128-bit AES key.
+        KeyGenerator kg = KeyGenerator.getInstance("AES");
+        kg.init(128);
+        SecretKey key = kg.generateKey();
+		
+	Cipher encCipher = Cipher.getInstance("AES/GCM/NOPADDING");
+        encCipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] enc = encCipher.doFinal(data);
+        AlgorithmParameters ap = encCipher.getParameters();
+
+        // Obtain a similar cipher, and use the parameters.
+        Cipher decCipher = Cipher.getInstance("AES/GCM/NOPADDING");
+        decCipher.init(Cipher.DECRYPT_MODE, key, ap);
+        byte[] dec = decCipher.doFinal(enc);
+
+        if (Arrays.compare(data, dec) != 0) {
+            throw new Exception("Original data != decrypted data");
+		
+		return "";
+		
+	}	
 	
-//	public String encrypt_aes256_cbc(String EHR_Data, String PUF_Secret) {
-//		
-//	}
-//	
-//	
-//	public String encrypt_aes128_cbc(String EHR_Data, String PUF_Secret) {
-//		
-//	}
+	public String encrypt_aes256_cbc(String EHR_Data, String PUF_Secret) {
+		
+	}
+	
+	
+	public String encrypt_aes128_cbc(String EHR_Data, String PUF_Secret) {
+		
+	}
+*/
+
+//End future extensions
+
 }

@@ -10,7 +10,7 @@
 
  */
 
-public classi Health_App {
+public class Health_App {
 	
 	public static void main(String[] args){
 		

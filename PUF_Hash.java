@@ -1,9 +1,19 @@
+/*
+ Author: Aditya Sood
+ Date: 1/05/2021
+
+ Class Functionality:
+ hash method defined for SHA-256 (using JCE)
+ MessageDigest object is updated with salt, App ID, and ultimately, the PUF secret
+ This digest will later be used by a KDF to generate a key
+ The digest is convert to hex, where it is returned
+ */
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class PUF_Hash extends PUF{
 
-	private	String object_salt = "PUF used for health Appl";
 
 	public String create_hash_sha256(byte[] Salt, String Appl_Id) {
 		
@@ -20,7 +30,6 @@ public class PUF_Hash extends PUF{
 	      //Passing data to the created MessageDigest Object
 	      md.update(Salt);
 	      md.update(Appl_Id.getBytes());
-	      md.update(object_salt.getBytes());
 	      md.update(hw_puf.getBytes());
 	      
 	      
