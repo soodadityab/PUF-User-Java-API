@@ -2,15 +2,15 @@
 
 Java APIs that enable software applications to interact with and use hardware Physically Unclonable Functions (PUFs) for secure key derivation, encryption and hash operations. These APIs are directly executed in a trusted enclave for enhanced security and privacy.
 
-Research Problem
+Research Problem: 
 Billions of consumer Electronic-Health-Records (EHRs) are continuously generated via smart health-tracking devices. Constant exploitation of these private records leads to ransomware, identity theft, and health fraud. Existing cryptosystems tasked with protecting these records are weak because they allow attackers to obtain the key from the software with relative ease. I propose a novel hardware cryptosystem that uses Physically Unclonable Functions with Confidential Computing for enhancing the security of user-EHRs.
 
-Threat Model
+Threat Model: 
 Trusted Computing Base for EHRs: Health App, OS, PUF, Software Guard Extensions (SGX), CPU
 Trusted Computing Base for encryption keys: CPU, PUF, SGX. THE OS AND BIOS ARE NOT TRUSTED
 Security features address: Software side channels, local malware, OS-privileged attacks
 
-Novel Hardware Cryptosystem
+Novel Hardware Cryptosystem: 
 Due to inherently unpredictable silicon fluctuations during  manufacturing, each Physically Unclonable Function is a random, unique, immutable, and unclonable 'digital fingerprint'. The PUF employs its underlying physical characteristics to generate a secret 256-bit value. I propose that the PUF is embedded on the CPU, where this secret contributes towards generating a secure AES key.
 The PUF secret is first hashed using SHA-512, and the resulting digest is sent to a key derivation function (KDF). This, along with the Application ID and Salt (provided by the Health App sending the EHRs), are all inputted to the KDF to generate a secure AES key.
 
@@ -38,7 +38,7 @@ In the event that an adversary manages to corrupt the OS or impmlant malware on 
 
 Intel SGX SDK GitHub is here: https://github.com/intel/linux-sgx
 
-API Class Hierarchy
+API Class Hierarchy: 
 To determine which cryptographic algorithms were optimal for my design, I developed a set of APIs that grant functionality to my system (software prototype) and allow me to ultimately test it under simulated conditions. The class hierarchy models my system architecture. I tested and subsequently analyzed the performance of different hash, software encryption, and hardware encryption algorithms in my prototype, using the APIs to execute features like key derivation. OpenSSL and JCE were used to import the cryptography algorithms.
 
 After testing various encryption and hash algorithms, my results indicated the following:
@@ -46,7 +46,7 @@ After testing various encryption and hash algorithms, my results indicated the f
 - AES-NI-256-GCM was chosen for encryption due to its high throughput, strong key size, and the additional bonus of authenticated encryption (using GHASH)
 - SHA-512 was selected for hash due to its ability to maintain a strong efficiency without compromising on its collision resistance
 
-Enhancements to Intel CPU
+Enhancements to Intel CPU: 
 Through my research, I have identified the following security enhancements that can be made to the Intel CPUs:
 - There is a need for SHA-512 new instructions that permit hardware hashing
 - Hardware protected path from the SGX to the PUF, which can be accessed by SGX enclaves
